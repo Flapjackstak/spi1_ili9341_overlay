@@ -1,0 +1,77 @@
+1- Connection diagram.
+
+   LCD pin - BPI-M2Z pin
+       VCC - 2 (5v)
+       GND - 6 (GND)
+        CS - 8 (SPI1_CS)
+     RESET - 31 (PA8)
+        DC - 33 (PA9)
+ SDI(MOSI) - 16 (SPI1_MOSI)
+       SCK - 10 (SPI1_CLK)
+       LED - 7  (PA6)
+ SDO(MISO) - 12 (SPI1_MISO) 
+     T_CLK - 23 (SPI0_CLK)
+      T_CS - 24 (SPI0_CS)(PC3)
+     T_DIN - 19 (SPI0_MOSI)(PC0)
+      T_DO - 21 (SPI0_MISO)(PC1)
+     T_IRQ - 29 (PA7)
+
+After install Armbian (Kernel 5.4+) an create a normal user. 
+
+2- LCD part.
+  - as root create /root/ili9341bpiz.dts file.
+
+    root@bananapim2zero:~# nano /root/ili9341bpiz.dts  
+
+  - Copy content of spi1_ili9341_overlay.txt attached and save
+
+  - Buil and install with
+  
+    root@bananapim2zero:~# armbian-add-overlay ili9341bpiz.dts
+
+3- Touch part.
+  - as root create /root/ads7846bpiz.dts file.
+
+    root@bananapim2zero:~# nano /root/ads7846bpiz.dts  
+
+  - Copy content of spi0-ads7846_overlay.txt attached and save
+
+  - Buil and install with
+  
+    root@bananapim2zero:~# armbian-add-overlay ads7846bpiz.dts
+
+4- Set Graphic mode
+
+   - create file /etc/modules-load.d/98-fbtft.conf 
+
+     root@bananapim2zero:~# nano /etc/modules-load.d/98-fbtft.conf
+
+   - paste and save the next
+
+     fbtft
+     fbtft_device
+
+   - create file /usr/share/X11/xorg.conf.d/99-fbdev.conf
+
+   - paste and save the next
+
+     Section "Device"  
+     Identifier "piscreen"
+     Driver "fbdev"
+     Option "fbdev" "/dev/fb0"
+     EndSection
+
+5- Change console font (optional)
+
+   root@bananapim2zero:~# sudo dpkg-reconfigure console-setup
+
+   - Select next options
+
+     Encoding to use on the console: <UTF-8>
+     Character set to support: <Guess optimal character set>
+     Font for the console: Terminus (default is VGA)
+     Font size: 6x12 (framebuffer only)
+
+6- Reboot
+
+   
